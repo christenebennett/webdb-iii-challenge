@@ -6,6 +6,7 @@ exports.up = function(knex, Promise) {
       .notNullable()
       .unique();
     tbl.integer('cohort_id')
+      .notNullable()
       .unsigned()
       .references('id')
       .inTable('cohorts')

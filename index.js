@@ -98,7 +98,21 @@ server.delete('/api/cohorts/:id', async (req, res) => {
   }
 })
 
-// list all students
+
+// STRETCH
+// [POST] /students This route should save a new student to the database.
+server.post('/api/students', async (req, res) => {
+  try {
+    const [id] = await db('students').insert(req.body);
+    const student = await db('students')
+      .where({id})
+      .first();
+    res.status(201).json(student);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+})
+// [GET] /students This route will return an array of all students.
 server.get('/api/students', async (req, res) => {
   try {
     const students = await db('students');
@@ -107,6 +121,10 @@ server.get('/api/students', async (req, res) => {
     res.status(500).json(error)
   }
 })
+// [GET] /students/:id This route will return the student with the matching id.
+// [PUT] /students/:id This route will update the student with the matching id using information sent in the body of the request.
+// [DELETE] /students/:id This route should delete the specified student.
+
 
 const port = 5000;
 server.listen(port, () => console.log(`server is listening on port ${port}`))
