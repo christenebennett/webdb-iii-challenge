@@ -141,6 +141,7 @@ server.get('/api/students', async (req, res) => {
 })
 
 // [GET] /students/:id This route will return the student with the matching id.
+// STRETCH Have the student returned by the [GET] /students/:id endpoint include the cohort name and remove the cohort_id fields. 
 server.get('/api/students/:id', async (req, res) => {
   try {
     const student = await db('students')
@@ -149,7 +150,14 @@ server.get('/api/students/:id', async (req, res) => {
       })
       .first();
     if (student) {
-      res.status(200).json(student);
+      const cohort = await db('cohorts')
+        .where({id: student.cohort_id})
+        .first();
+      res.status(200).json({
+        "id" : student.id,
+        "name" : student.name,
+        "cohort" : cohort.name
+      });
     } else {
       res.status(404).json({
         message: 'Student not found.'
