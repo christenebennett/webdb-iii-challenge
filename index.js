@@ -1,7 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
 const knex = require('knex');
-
 const dbConfig = require('./knexfile.js');
 
 const db = knex(dbConfig.development);
@@ -11,7 +10,6 @@ const server = express();
 server.use(helmet());
 server.use(express.json());
 
-// list all cohorts
 // [GET] /api/cohorts This route will return an array of all cohorts.
 server.get('/api/cohorts', async (req, res) => {
   try {
@@ -27,7 +25,9 @@ server.post('/api/cohorts', async (req, res) => {
   try {
     const [id] = await db('cohorts').insert(req.body);
     const cohort = await db('cohorts')
-      .where({ id })
+      .where({
+        id
+      })
       .first();
     res.status(201).json(cohort);
   } catch (error) {
@@ -39,13 +39,17 @@ server.post('/api/cohorts', async (req, res) => {
 server.get('/api/cohorts/:id', async (req, res) => {
   try {
     const cohort = await db('cohorts')
-      .where({id: req.params.id})
+      .where({
+        id: req.params.id
+      })
       .first();
-      if (cohort){
-        res.status(200).json(cohort);
-      } else {
-        res.status(404).json({message: 'Record does not exist'});
-      }
+    if (cohort) {
+      res.status(200).json(cohort);
+    } else {
+      res.status(404).json({
+        message: 'Record does not exist'
+      });
+    }
   } catch (error) {
     res.status(500).json(error);
   }
@@ -53,11 +57,13 @@ server.get('/api/cohorts/:id', async (req, res) => {
 
 // [GET] /api/cohorts/:id/students returns all students for the cohort with the specified id.
 server.get('/api/cohorts/:id/students', async (req, res) => {
-  const {id} = req.params;
+  const {
+    id
+  } = req.params;
   try {
     const students = await db('students')
       .where('cohort_id', id)
-      res.status(200).json(students);
+    res.status(200).json(students);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -67,15 +73,21 @@ server.get('/api/cohorts/:id/students', async (req, res) => {
 server.put('/api/cohorts/:id', async (req, res) => {
   try {
     const count = await db('cohorts')
-      .where({id: req.params.id})
+      .where({
+        id: req.params.id
+      })
       .update(req.body);
     if (count > 0) {
       const cohort = await db('cohorts')
-      .where({id: req.params.id})
-      .first();
-    res.status(200).json(cohort);
+        .where({
+          id: req.params.id
+        })
+        .first();
+      res.status(200).json(cohort);
     } else {
-      res.status(404).json({message: 'Record not found.'});
+      res.status(404).json({
+        message: 'Record not found.'
+      });
     }
   } catch (error) {
     res.status(500).json(error);
@@ -86,13 +98,17 @@ server.put('/api/cohorts/:id', async (req, res) => {
 server.delete('/api/cohorts/:id', async (req, res) => {
   try {
     const count = await db('cohorts')
-      .where({id: req.params.id})
+      .where({
+        id: req.params.id
+      })
       .del();
-      if (count > 0) {
-        res.status(204).end();
-      } else {
-        res.status(404).json({error: 'Record not found'});
-      }
+    if (count > 0) {
+      res.status(204).end();
+    } else {
+      res.status(404).json({
+        error: 'Record not found.'
+      });
+    }
   } catch (error) {
     res.status(500).json(error);
   }
@@ -105,7 +121,9 @@ server.post('/api/students', async (req, res) => {
   try {
     const [id] = await db('students').insert(req.body);
     const student = await db('students')
-      .where({id})
+      .where({
+        id
+      })
       .first();
     res.status(201).json(student);
   } catch (error) {
@@ -121,13 +139,22 @@ server.get('/api/students', async (req, res) => {
     res.status(500).json(error);
   }
 })
+
 // [GET] /students/:id This route will return the student with the matching id.
 server.get('/api/students/:id', async (req, res) => {
   try {
     const student = await db('students')
-      .where({id: req.params.id})
+      .where({
+        id: req.params.id
+      })
       .first();
-    res.status(200).json(student);
+    if (student) {
+      res.status(200).json(student);
+    } else {
+      res.status(404).json({
+        message: 'Student not found.'
+      });
+    }
   } catch (error) {
     res.status(500).json(error);
   }
@@ -137,15 +164,21 @@ server.get('/api/students/:id', async (req, res) => {
 server.put('/api/students/:id', async (req, res) => {
   try {
     const count = await db('students')
-      .where({id: req.params.id})
+      .where({
+        id: req.params.id
+      })
       .update(req.body);
     if (count > 0) {
       const student = await db('students')
-      .where({id: req.params.id})
-      .first();
-    res.status(200).json(student);
+        .where({
+          id: req.params.id
+        })
+        .first();
+      res.status(200).json(student);
     } else {
-      res.status(404).json({message: 'Student not found.'});
+      res.status(404).json({
+        message: 'Student not found.'
+      });
     }
   } catch (error) {
     res.status(500).json(error);
@@ -153,7 +186,24 @@ server.put('/api/students/:id', async (req, res) => {
 })
 
 // [DELETE] /students/:id This route should delete the specified student.
-
+server.delete('/api/students/:id', async (req, res) => {
+  try {
+    const count = await db('students')
+      .where({
+        id: req.params.id
+      })
+      .del();
+    if (count > 0) {
+      res.status(204).end();
+    } else {
+      res.status(404).json({
+        error: 'Student not found.'
+      });
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+})
 
 const port = 5000;
 server.listen(port, () => console.log(`server is listening on port ${port}`))
