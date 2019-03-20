@@ -60,6 +60,24 @@ server.get('/api/cohorts/:id/students', async (req, res) => {
 })
 
 // [PUT] /api/cohorts/:id This route will update the cohort with the matching id using information sent in the body of the request.
+server.put('/api/cohorts/:id', async (req, res) => {
+  try {
+    const count = await db('cohorts')
+      .where({id: req.params.id})
+      .update(req.body);
+    if (count > 0) {
+      const cohort = await db('cohorts')
+      .where({id: req.params.id})
+      .first();
+    res.status(200).json(cohort);
+    } else {
+      res.status(404).json({message: 'Record not found.'});
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+})
+
 // [DELETE] /api/cohorts/:id This route should delete the specified cohort.
 
 
