@@ -12,7 +12,7 @@ server.use(helmet());
 server.use(express.json());
 
 // list all cohorts
-// x [GET] /api/cohorts This route will return an array of all cohorts.
+// [GET] /api/cohorts This route will return an array of all cohorts.
 server.get('/api/cohorts', async (req, res) => {
   try {
     const cohorts = await db('cohorts');
@@ -41,7 +41,11 @@ server.get('/api/cohorts/:id', async (req, res) => {
     const cohort = await db('cohorts')
       .where({id: req.params.id})
       .first();
-    res.status(200).json(cohort);
+      if (cohort){
+        res.status(200).json(cohort);
+      } else {
+        res.status(404).json({message: 'Record does not exist'});
+      }
   } catch (error) {
     res.status(500).json(error);
   }
@@ -94,13 +98,11 @@ server.delete('/api/cohorts/:id', async (req, res) => {
   }
 })
 
-
 // list all students
 server.get('/api/students', async (req, res) => {
   try {
     const students = await db('students');
     res.status(200).json(students);
-
   } catch (error) {
     res.status(500).json(error)
   }
