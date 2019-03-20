@@ -118,10 +118,21 @@ server.get('/api/students', async (req, res) => {
     const students = await db('students');
     res.status(200).json(students);
   } catch (error) {
-    res.status(500).json(error)
+    res.status(500).json(error);
   }
 })
 // [GET] /students/:id This route will return the student with the matching id.
+server.get('/api/students/:id', async (req, res) => {
+  try {
+    const student = await db('students')
+      .where({id: req.params.id})
+      .first();
+    res.status(200).json(student);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+})
+
 // [PUT] /students/:id This route will update the student with the matching id using information sent in the body of the request.
 // [DELETE] /students/:id This route should delete the specified student.
 
