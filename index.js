@@ -79,6 +79,20 @@ server.put('/api/cohorts/:id', async (req, res) => {
 })
 
 // [DELETE] /api/cohorts/:id This route should delete the specified cohort.
+server.delete('/api/cohorts/:id', async (req, res) => {
+  try {
+    const count = await db('cohorts')
+      .where({id: req.params.id})
+      .del();
+      if (count > 0) {
+        res.status(204).end();
+      } else {
+        res.status(404).json({error: 'Record not found'});
+      }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+})
 
 
 // list all students
