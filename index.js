@@ -6,7 +6,51 @@ const dbConfig = require('./knexfile.js');
 
 const db = knex(dbConfig.development);
 
-const server = exress();
+const server = express();
 
 server.use(helmet());
 server.use(express.json());
+
+// list all cohorts
+// x [GET] /api/cohorts This route will return an array of all cohorts.
+server.get('/api/cohorts', async (req, res) => {
+  try {
+    const cohorts = await db('cohorts');
+    res.status(200).json(cohorts);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+})
+
+// [POST] /api/cohorts This route should save a new cohort to the database.
+server.post('/api/cohorts', async (req, res) => {
+  try {
+    const [id] = await db('cohorts').insert(req.body);
+    const cohort = await db('cohorts')
+      .where({ id })
+      .first();
+    res.status(201).json(cohort);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+})
+
+// [GET] /api/cohorts/:id This route will return the cohort with the matching id.
+// [GET] /api/cohorts/:id/students returns all students for the cohort with the specified id.
+// [PUT] /api/cohorts/:id This route will update the cohort with the matching id using information sent in the body of the request.
+// [DELETE] /api/cohorts/:id This route should delete the specified cohort.
+
+
+// list all students
+server.get('/api/students', async (req, res) => {
+  try {
+    const students = await db('students');
+    res.status(200).json(students);
+
+  } catch (error) {
+    res.status(500).json(error)
+  }
+})
+
+const port = 5000;
+server.listen(port, () => console.log(`server is listening on port ${port}`))
